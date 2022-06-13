@@ -1,0 +1,49 @@
+type Mutation {
+	createUser(input: UserInput): String
+	updateStudent(
+		ClassNo: String,
+		Department: String,
+		email: AWSEmail,
+		username: String
+	): String
+	deleteStudentDetails(id: ID!, sk: String!): String
+	addStudentDetails(input: StudentInput): String
+}
+
+type Query {
+	getAllStudents: [AWSJSON]
+	getStudent(id: ID): [AWSJSON]
+}
+
+type Student {
+	id: ID
+	sk: String
+	email: AWSEmail
+	username: String
+	Department: String
+	ClassNo: String
+	value: [AWSJSON]
+}
+
+input StudentInput {
+	id: ID!
+	sk: String!
+	email: AWSEmail
+	username: String
+	Department: String
+	ClassNo: String
+	value: [AWSJSON]
+}
+
+input UserInput {
+	groupName: String!
+	username: String!
+	email: AWSEmail!
+	Department: String
+	ClassNo: String
+}
+
+schema {
+	query: Query
+	mutation: Mutation
+}

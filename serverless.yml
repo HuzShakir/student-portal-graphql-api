@@ -1,0 +1,93 @@
+service: student-portal-graphql-api
+frameworkVersion: '3'
+plugins:
+  - serverless-appsync-plugin
+  - serverless-dotenv-plugin
+useDotenv: true
+custom:
+  tableName: ${env:USERS_TABLE}
+  appSync:
+    # name: testAppSync
+    apiId: skfqibeuurarnkiaftzhit63ve
+    schema: schema.graphql
+    # caching:
+      # behavior: FULL_REQUEST_CACHING
+    # authenticationType: API_KEY
+    mappingTemplates:      
+      - type: Mutation
+        field: createUser
+        dataSource: studentPortalGraphQLApi
+        request: false
+        response: false
+      - type: Mutation
+        field: updateStudent
+        dataSource: studentPortalGraphQLApi
+        request: false
+        response: false
+      - type: Mutation
+        field: deleteStudentDetails
+        dataSource: studentPortalGraphQLApi
+        request: false
+        response: false
+      - type: Mutation
+        field: addStudentDetails
+        dataSource: studentPortalGraphQLApi
+        request: false
+        response: false
+      - type: Query
+        field: getAllStudents
+        dataSource: studentPortalGraphQLApi
+        request: false
+        response: false      
+      - type: Query
+        field: getStudent
+        dataSource: studentPortalGraphQLApi
+        request: false
+        response: false 
+    dataSources:        
+      - type: AWS_LAMBDA
+        name: studentPortalGraphQLApi
+        config:
+          functionName: api                    
+
+
+provider:
+  region: ${env:REGION}
+  name: aws
+  runtime: nodejs14.x
+  iam:
+    role: 
+      statements:
+        - Effect: "Allow"
+          Action:            
+            - "dynamodb:PutItem"
+            - "dynamodb:Query"
+            - "dynamodb:UpdateItem"
+            - "dynamodb:DeleteItem"
+            - "dynamodb:GetItem"
+            - "dynamodb:Scan"
+          Resource: "arn:aws:dynamodb:${env:REGION}:*:table/${env:USERS_TABLE}"
+
+
+functions:
+  api:
+    handler: handler.handler
+
+
+resources:
+  Resources:
+    UsersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: sk
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+          - AttributeName: sk
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:custom.tableName}
